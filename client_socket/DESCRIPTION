@@ -1,0 +1,16 @@
+===================//=======================
+server listens for any client message
+On receive, server sends command to relay.pl
+when called, relay.pl forwards command directly to Arduino.
+Arduino interprets client messages.
+===================//=======================
+I want:
+client is given a voice command from google's speech-to-text.
+server listens for any client message
+client message is a voice command or conversation.
+option 1: server passes on command to script.pl
+script.pl decides whether to talk to ALICE or to do stuff.
+script.pl invokes the right sub-script or command.
+sub-script does the action.
+computer talks and does stuff!
+===================//=======================

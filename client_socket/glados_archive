@@ -1,0 +1,44 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Time::HiRes qw(usleep nanosleep);
+use lib '/usr/lib/perl5/User';
+require Anna;
+
+if ($#ARGV < 0)
+{
+	print &Anna::get_anna_screen."\n";
+	if (&Anna::get_anna_reply)
+	{
+		my $response = <>;
+		&Anna::say_to_anna($response);
+	}
+	&usleep(5000);
+	&Anna::get_anna_reply;
+} else {
+	if ($ARGV[0] =~ m/say/) {
+		&Anna::get_anna_screen;
+		if ($#ARGV > 0) {
+			my $response = "";
+			for (my $i = 1; $i <= $#ARGV; $i++) {
+				$response = "$response $ARGV[$i]";
+			}
+			&Anna::say_to_anna($response);
+		} else {
+			my $response = <>;
+			&Anna::say_to_anna($response);
+		}
+	}
+	if ($ARGV[0] =~ m/get/) {
+		&Anna::get_anna_screen;
+		&Anna::get_anna_reply;
+	} else {
+		if ($#ARGV == 0) { # client communication
+			my $response = $ARGV[0];
+			&Anna::say_to_anna($response);
+			&usleep(5000);
+			&Anna::get_anna_reply;
+		}
+	}
+}
+		
