@@ -1,0 +1,136 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Time::HiRes qw(usleep nanosleep);
+use WWW::WolframAlpha;
+use lib '/usr/lib/perl5/User';
+require Anna;
+require Pianobar;
+
+# foreach my $arg (@ARGV) { # for debugging
+# 	system "says $arg &>/dev/null";
+# }
+
+if ($#ARGV < 0)
+{
+	print &Anna::get_anna_screen."\n";
+	if (&Anna::get_anna_reply)
+	{
+		my $response = <>;
+		&Anna::say_to_anna($response);
+	}
+	&usleep(5000);
+	&Anna::get_anna_reply;
+} else {
+	if ($ARGV[0] =~ m/^say$/) {
+		&Anna::get_anna_screen;
+		if ($#ARGV > 0) {
+			my $response = "";
+			for (my $i = 1; $i <= $#ARGV; $i++) {
+				$response = "$response $ARGV[$i]";
+			}
+			&Anna::say_to_anna($response);
+		} else {
+			my $response = <>;
+			&Anna::say_to_anna($response);
+		}
+	}
+	if ($#ARGV == 0) { # client communication
+		print "found: $ARGV[0]\n";
+		my $thankyou = ( 1 == 0 );
+		if ($ARGV[0] =~ m/^[\s\"]*stop[\s\"]*$/) {
+			system "killall GLaDOS";
+			system "killall says";
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^[\s\"]*get[\s\"]*$/) {
+ 			&Anna::get_anna_screen;
+ 			&Anna::get_anna_reply;
+			print "i said GET\n";
+			$thankyou = ( 1 == 1 );
+		} 
+		if ($ARGV[0] =~ m/^.*search(.*)$/) {
+			&Anna::searchWA($1);
+			$thankyou = ( 1 == 1 );
+		} 
+		if ($ARGV[0] =~ m/^.*change.*station(.*)$/) {
+			&Pianobar::get_screen;
+			&Pianobar::change_station($1);
+			$thankyou = ( 1 == 1 );
+		} 
+		if ($ARGV[0] =~ m/^.*music.*off/) {
+			&Pianobar::get_screen;
+			&Pianobar::command("q");
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*volume.*up/) {
+			&Pianobar::get_screen;
+			&Pianobar::command(")");
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*volume.*down/) {
+			&Pianobar::get_screen;
+			&Pianobar::command("(");
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*next.*song/) {
+			&Pianobar::get_screen;
+			&Pianobar::command("n");
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*pause.*music/) {
+			&Pianobar::get_screen;
+			&Pianobar::command("q");
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*pandora\s(.*)/) {
+			chomp( my $cmd = $1 );
+			$cmd =~ s/^\s+//;
+			$cmd =~ s/\s+$//;
+			&Pianobar::get_screen;
+			&Pianobar::command($cmd);
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/^.*reminder\s(.*),(.*)/) {
+			chomp( my $time = $1 ); $time =~ s/\"//g;
+			chomp( my $remi = $2 ); $remi =~ s/\"//g;
+			my $submit = "./queue.pl \"$time\" \"$remi\"";
+			print "$1\n";
+			print "$2\n";
+			print "$submit\n";
+			system $submit;
+			$thankyou = ( 1 == 1 );
+		}
+		if ($ARGV[0] =~ m/.*turn printer ({on|off}).*/) {
+			print "I said turn printer $1\n";
+			$thankyou = ( 1 == 1 );
+		}
+# 		if ($ARGV[0] =~ m/wake.*up.*alexis/) {
+# 			system "says \"stop dreaming about horses, girl, this is real life\"";
+# 		}
+		if ( !$thankyou ) {
+			my $response = $ARGV[0];
+			print "i said: $response\n";
+ 			&Anna::get_anna_screen;
+			&Anna::say_to_anna($response);
+ 			&usleep(500000);
+ 			&Anna::get_anna_reply;
+		} # end if not (m/^get$/)
+	} # end if ($#ARGV == 0)
+} # end if not ($#ARGV < 0)
+		
+__END__
+if ($query->success) {
+  foreach my $pod (@{$query->pods}) {
+    print $pod->title ."\n";
+    foreach my $subpod (@{$pod->subpods}) {
+      print "  Subpod\n";
+      print '    plaintext: ', $subpod->plaintext, "\n" if $subpod->plaintext;
+      print '    title: ', $subpod->title, "\n" if $subpod->title;
+      print '    minput: ', $subpod->minput, "\n" if $subpod->minput;
+      print '    moutput: ', $subpod->moutput, "\n" if $subpod->moutput;
+      print '    mathml: ', $subpod->mathml, "\n" if $subpod->mathml;
+      print '    img: ', $subpod->img, "\n" if $subpod->img;
+    }
+  }
+}
