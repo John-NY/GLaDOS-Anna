@@ -8,7 +8,7 @@ use Device::XBee::API;
 use Data::Dumper;
 
 
-my @arr_names = ('PRINTER','NODE3','NODE5','OTHER1');
+my @arr_names = ('PRINTER','NONOP','NODE5','OTHER1');
 my @arr_sl    = (0x407B4FBF,0x407B4FBE,0x407B4FC3,0x407C21BD);
 my @arr_pin   = ("D1","D1","D1","D1");
 
