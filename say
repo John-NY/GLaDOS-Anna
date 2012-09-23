@@ -1,0 +1,37 @@
+#!/bin/bash
+#say.sh (customized espeak)
+
+# IF COMMAND LINE SPEECH IS PASSED, SAY IT:
+if [ $# -ne 0 ]; then
+	for var in "$@"; do
+		echo $var
+	done
+	
+	for var in "$@"; do
+		for a in $var; do
+			V=$(((($RANDOM) % 40) - 20))
+			echo -n "<prosody pitch=\"+$V\">$a</prosody> " |
+			sed 's/+-/-/'
+		done
+	done |
+	espeak -m -k20 -p60 -s150 -v en-us+f4 --stdout | aplay > /dev/null 2>&1
+	#espeak -m -k20 -p60 -s150 -v en-us+f3 --stdout | aplay > /dev/null 2>&1
+	#cat > /dev/stdout |
+else	# IF I HAVE PIPE INPUT, DO THIS:
+	while read data; do
+		for var in "$data"; do
+			echo $var
+		done
+	
+		for var in "$data"; do
+			for a in $var; do
+				V=$(((($RANDOM) % 40) - 20))
+				echo -n "<prosody pitch=\"+$V\">$a</prosody> " |
+				sed 's/+-/-/' |
+				sed 's/*/star/g'
+				# Replace "*" with "star" to avoid loops.
+			done
+		done |
+		espeak -m -k20 -p60 -s150 -v en-us+f4 --stdout | aplay > /dev/null 2>&1
+	done
+fi

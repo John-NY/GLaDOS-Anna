@@ -1,0 +1,74 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+#use eGuideDog::Festival;
+#use Time::HiRes qw(usleep nanosleep);
+
+#my $speaker = eGuideDog::Festival::new();
+my $festival_client = "festival_client --ttw --otype wav";
+
+# IF COMMAND LINE SPEECH IS PASSED, SAY IT:
+my $p = 0;
+if ($#ARGV ge 0) {
+	my $cmdstr = "";
+	foreach my $var (@ARGV) {
+		print "$var\n";
+		$cmdstr = "$cmdstr $var";
+		my @word = split(/ /,$var);
+		foreach my $w (@word) {
+# 			$speaker->block_speak($var);
+# 			my $fc = sprintf("%s --output festout%.3d.wav ", $festival_client, $p++);
+# 			system "echo $w | $fc &>/dev/null";
+		}
+	}
+	$cmdstr =~ s/[<,>,\/,",`,`,\),\(]/ /g;
+	$cmdstr =~ s/\'/\\\'/g;
+	system sprintf("echo $cmdstr |%s --output festout_sent.wav >/dev/null", $festival_client); # process sentance
+
+# 	my $bend = "";
+# 	for (my $f = 0; $f < $p; $f++) {
+# 		my $rand = int(rand(200)-100);
+# 		system sprintf("sox festout%.3d.wav festout%.3d_pitch.wav pitch %d &>/dev/null", $f, $f, $rand);
+# 		$bend = "$bend $rand $bend";
+# 	}
+	# system sprintf("sox festout_sent.wav festout_sentbend.wav bend 1,%d,3 flanger 0 9 %d 71 0.5 triangle ", int(rand(200)-150), int(rand(40)-20)); # try bending pitch;
+	system sprintf("sox festout_sent.wav festout_sentbend.wav pitch 100 bend 0.2,%d,1  tremolo %d 30 treble +6 vol 1.5", int(rand(100)-50), int(rand(400)+300)); # try bending pitch;
+	# system "sox festout_sent.wav festout_sentbend.wav phaser 0.8 0.74 3 0.4 0.5 −t pitch $bend"; # try bending pitch;
+	
+	# system "sox --combine concatenate festout[0-9]??.wav festout.wav &>/dev/null"; # norm vad reverse vad reverse";
+	# system "sox --combine concatenate festout[0-9]??_pitch.wav festout_pitch.wav &>/dev/null"; # norm vad reverse vad reverse";
+	
+	system "aplay festout_sentbend.wav >/dev/null";
+	
+	# DO CLEANUP
+	my $submit = "rm festout[0-9]??.wav festout[0-9]??_pitch.wav festout.wav festout_sent*.wav &> /dev/null";
+	print "$submit\n";
+	system $submit;
+} else { 
+	# ELSE WE HAVE A PIPE
+	while (<STDIN>) {
+		my $cmdstr = "";
+		my $var = "$_";
+		print "$var\n";
+		$cmdstr = "$cmdstr $var";
+		$cmdstr =~ s/[<,>,\/,",`,`,',\),\(]/ /g;
+		$cmdstr =~ s/'/\'/g;
+		$cmdstr =~ s/\%/percent/g;
+		system sprintf("echo \"$cmdstr\" |%s --output festout_sent.wav &>/dev/null", $festival_client); # process sentance
+		system sprintf("sox festout_sent.wav festout_sentbend.wav pitch 100 bend 0.2,%d,1  tremolo %d 30 treble +6 vol 1.5", int(rand(300)-150), int(rand(400)+300)); # try bending pitch;
+		system "aplay festout_sentbend.wav &>/dev/null";
+		# DO CLEANUP
+		my $submit = "rm festout[0-9]??.wav festout[0-9]??_pitch.wav festout.wav festout_sent?*.wav &> /dev/null";
+		print "$submit\n";
+		system $submit;
+	}
+} # endif pipe
+
+
+
+__END__
+play   bend .35,18,.25  .15,74,.53  0,-52,.3
+play   pitch [shift (in 100ths of a semitone)] use -q and segment to shift segments
+   play speech.wav norm vad reverse vad reverse
+# to trim from both ends. The use of the norm effect is recommended, but remember that neither reverse nor norm is suitable for use with streamed audio.
