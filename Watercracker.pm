@@ -3,14 +3,19 @@ package Watercracker;
 use warnings;
 use strict;
 
+use Time::HiRes qw(usleep nanosleep);
 use Device::SerialPort;
 use ControlX10::CM11;
 
 sub SendCmd {
 
+	#my $no_block = 0; # false = retry up to a second
+	my $no_block = 1; # true = check for data only once.
+
 	my $dev = $_[0];
 	my $state = $_[1];
 	my $cmd = "";
+	my $data = "";
 	
 	my $serial_port = Device::SerialPort->new( '/dev/ttyS0' ) || die $!;
 	$serial_port->baudrate( 4800 );
@@ -44,6 +49,10 @@ sub SendCmd {
 #  $data = read_cm11($serial_port, $no_block);       # read()
 		&ControlX10::CM11::send($serial_port, "$house$unit"); # Address device A1
 		&ControlX10::CM11::send($serial_port, "$house$cmd"); # Address device A1
+		$data = &ControlX10::CM11::receive_cm11($serial_port);           # receive_buffer()
+		print "received: $data\n";
+		$data = &ControlX10::CM11::read_cm11($serial_port, $no_block);       # read()
+		print "read: $data\n";
 	}
 			
 } # end sub SendCmd()
