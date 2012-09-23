@@ -1,0 +1,33 @@
+found: "GET / HTTP/1.1
+Host: 64.81.44.52:9140
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: "
+i said: "GET / HTTP/1.1
+Host: 64.81.44.52:9140
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: "
+tried to respond at 8113.pts-0.darktower
+I said: \"GET / HTTP/1.1
+Host: 64.81.44.52:9140
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: \"
+My Command: screen -S 8113.pts-0.darktower -X stuff "\"GET / HTTP/1.1
+Host: 64.81.44.52:9140
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: \""
+Anna said: " What is this user\'s real name?
+"What
+is
+this
+user's
+real
+name?
+rm festout[0-9]??.wav festout[0-9]??_pitch.wav festout.wav festout_sent*.wav &> /dev/null

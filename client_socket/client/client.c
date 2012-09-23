@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <stdbool.h>
+#include <time.h>
 
 void error(const char *msg)
 {
@@ -45,18 +47,27 @@ int main(int argc, char *argv[])
     serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
         error("ERROR connecting");
-//    printf("Please enter the message: ");
-//    bzero(buffer,256);
-//    fgets(buffer,255,stdin);
     sprintf(buffer,"%s",command);
     n = write(sockfd,buffer,strlen(buffer));
     if (n < 0) 
          error("ERROR writing to socket");
-    bzero(buffer,256);
-    n = read(sockfd,buffer,255);
-    if (n < 0) 
-         error("ERROR reading from socket");
-    printf("%s\n",buffer);
-    close(sockfd);
+
+    clock_t start = clock();
+    bool quit = false;
+    while (!quit)
+    {
+       bzero(buffer,256);
+       n = read(sockfd,buffer,255);
+       if (clock() > (start + CLOCKS_PER_SEC)) {
+            close(sockfd);
+            quit = true;
+       } else { 
+            if (n > 0) {
+               printf("%s",buffer);
+               start = clock();
+            }
+       }
+    }
+    printf("\n");
     return 0;
 }

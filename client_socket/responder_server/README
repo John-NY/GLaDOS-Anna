@@ -1,0 +1,13 @@
+THis was created 15 May 2012 to allow long replies to the client [jcd].
+The function dostuff() was modified to read a file and send it to client.
+Future functionality will include 
+(1) argv[2] will be the name of the file to read.
+(2) client input will specify a variable to return.
+(3) the read file will be written to by scripts that report status 
+    for each of the sensors and switches.
+Once the server can pass infomation to a client, an Android application
+can update itself from the server (from menu?  automatic?).
+Then the challange becomes creating a responsive android application,
+possibly via a service that runs and is accessed by the GUI.
+The android app can also display the probablility of occupancy in a 
+graphical way, as written in Notebook B.
